@@ -26,6 +26,10 @@ describe('validateExpense', () => {
   it('accepts valid input', () => {
     expect(validateExpense('Coffee', 4.5).ok).toBe(true);
   });
+
+  it('rejects amount with more than 2 decimal places', () => {
+    expect(validateExpense('Penny', 0.001).ok).toBe(false);
+  });
 });
 
 describe('addExpense', () => {
@@ -73,6 +77,14 @@ describe('total', () => {
 
   it('returns 0 for empty list', () => {
     expect(total([])).toBe(0);
+  });
+
+  it('0.1 + 0.2 equals 0.3 (integer cents)', () => {
+    const list = [
+      { id: '1', description: 'a', amount: 0.1, category: 'Food' },
+      { id: '2', description: 'b', amount: 0.2, category: 'Food' },
+    ];
+    expect(total(list)).toBe(0.3);
   });
 });
 

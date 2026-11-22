@@ -26,6 +26,9 @@ export function validateExpense(description: string, amount: number): Validation
   if (amount > MAX_AMOUNT) {
     return { ok: false, error: `Amount cannot exceed ${MAX_AMOUNT.toLocaleString()}.` };
   }
+  if (Math.round(amount * 100) / 100 !== amount) {
+    return { ok: false, error: 'Amount cannot have more than 2 decimal places.' };
+  }
   return { ok: true };
 }
 
@@ -53,18 +56,22 @@ export function deleteExpense(list: Expense[], id: string): Expense[] {
 }
 
 export function total(list: Expense[]): number {
-  return list.reduce((sum, e) => sum + e.amount, 0);
+  const cents = list.reduce((sum, e) => sum + Math.round(e.amount * 100), 0);
+  return cents / 100;
 }
 
 export function totalPerCategory(list: Expense[]): Record<Category, number> {
-  const base: Record<Category, number> = {
+  const cents: Record<Category, number> = {
     Food: 0,
     Transport: 0,
     Study: 0,
     Other: 0,
   };
-  return list.reduce((acc, e) => {
-    acc[e.category] += e.amount;
-    return acc;
-  }, base);
+  for (const e of list) {
+    cents[e.category] += Math.round(e.amount * 100);
+  }
+  (Object.keys(cents) as Category[]).forEach((c) => {
+    cents[c] /= 100;
+  });
+  return cents;
 }

@@ -22,13 +22,14 @@
 - Separation of concerns: pure business logic in `src/lib/expenses.ts`; UI in `src/App.tsx`; tests in `tests/expenses.test.ts`.
 - Pure functions chosen for testability and predictable state updates.
 - Fixed category set: Food, Transport, Study, Other.
-- Validation rules: reject empty description; reject amount ≤ 0; reject amount > 1,000,000.
-- npm scripts: `test`, `typecheck`, `lint`, `build` — all green (11 tests passing).
-- No extra packages installed beyond template defaults + Vitest.
+- Validation rules: reject empty description; reject amount ≤ 0; reject amount > 1,000,000; reject amounts with more than 2 decimal places (e.g. 0.001).
+- Totals (`total()`, `totalPerCategory()`) computed in integer cents via `Math.round(amount*100)`, then divided by 100 to eliminate floating-point drift (e.g. 0.1+0.2 yields exactly 0.3).
+- AGENTS.md workflow followed for approved minimal diffs; no dependency changes.
+- npm scripts: `test`, `typecheck`, `lint`, `build` — all green (13 tests passing: 11 original unchanged + 2 new).
 
 ## Open questions & assumptions
 
-- Assumes all amounts are in a single, unspecified currency (no currency formatting/symbol defined).
+- Assumes all amounts are in a single, unspecified currency (no currency formatting/symbol defined); cents-based arithmetic implies 2-decimal precision model.
 - No persistence across reloads assumed by design.
 - Category list assumed fixed; no add/edit category feature requested.
 - No sorting/filtering of the expense list requested yet.
